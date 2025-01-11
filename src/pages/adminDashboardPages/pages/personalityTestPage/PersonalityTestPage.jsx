@@ -33,6 +33,9 @@ import { setIsEditPersonalityTestModalOpen } from "../../../../features/adminPag
 import { setCurrentTestForEdit } from "../../../../features/adminPage/testPage/currentTestForEditSlice";
 import { setIsDeletetTestModalOpen } from "../../../../features/adminPage/testPage/isDeletetTestModalOpenSlice";
 import { setCurrentTestForDelete } from "../../../../features/adminPage/testPage/currentTestForDeleteSlice";
+import { BACKEND_URL } from "../../../../api";
+import Cookies from "js-cookie";
+import { setIsMainLoaderActive } from "../../../../features/isMainLoaderActiveSlice";
 
 const PersonalityTestPage = () => {
   const dispatch = useDispatch();
@@ -246,11 +249,44 @@ const AddPersonalityTestModal = () => {
       questions: allQuestionAndAnswerRecord
     }
 
-    let allDataOfTests = JSON.parse(JSON.stringify(allRecordOfTest));
-    allDataOfTests.push(allRecord)
-    dispatch(setAllRecordOfTest(allDataOfTests));
-    dispatch(setAllQuestionAndAnswerRecord([]));
-    dispatch(setIsAddPersonalityTestModalOpen(false));
+    fetch(`${BACKEND_URL}/api/v1/admin/add-new-test`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("adminToken")}`
+      },
+      body: JSON.stringify({
+        token: Cookies.get("adminToken"),
+        test_name: testName,
+        image: personalityTestImageRef.current.src,
+        questions: allQuestionAndAnswerRecord
+      })
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.status == "success") {
+
+          dispatch(setIsMainLoaderActive(false));
+        }
+        else {
+          toast.error(data.message);
+          dispatch(setIsMainLoaderActive(false));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setIsMainLoaderActive(false));
+      })
+
+    // let allDataOfTests = JSON.parse(JSON.stringify(allRecordOfTest));
+    // allDataOfTests.push(allRecord)
+    // dispatch(setAllRecordOfTest(allDataOfTests));
+    // dispatch(setAllQuestionAndAnswerRecord([]));
+    // dispatch(setIsAddPersonalityTestModalOpen(false));
+
+
 
   }
 
