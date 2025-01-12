@@ -46,6 +46,38 @@ const PersonalityTestPage = () => {
 
   }, [allRecordOfTest])
 
+  useEffect(() => {
+    dispatch(setIsMainLoaderActive(true));
+    fetch(`${BACKEND_URL}/api/v1/admin/fetch-all-tests`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("adminToken")}`
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.status == "success") {
+          toast.success(data.message);
+          let allDataOfTests = JSON.parse(JSON.stringify(data.all_personality_tests));
+          dispatch(setAllRecordOfTest(allDataOfTests));
+          dispatch(setAllQuestionAndAnswerRecord([]));
+          dispatch(setIsAddPersonalityTestModalOpen(false));
+          dispatch(setIsMainLoaderActive(false));
+        }
+        else {
+          toast.error(data.message);
+          dispatch(setIsMainLoaderActive(false));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setIsMainLoaderActive(false));
+      })
+  }, [])
+
   return (
     <>
       <div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex">
@@ -249,6 +281,8 @@ const AddPersonalityTestModal = () => {
       questions: allQuestionAndAnswerRecord
     }
 
+    dispatch(setIsMainLoaderActive(true));
+
     fetch(`${BACKEND_URL}/api/v1/admin/add-new-test`, {
       method: 'POST',
       headers: {
@@ -267,7 +301,11 @@ const AddPersonalityTestModal = () => {
       })
       .then((data) => {
         if (data.status == "success") {
-
+          toast.success(data.message);
+          let allDataOfTests = JSON.parse(JSON.stringify(data.all_personality_tests));
+          dispatch(setAllRecordOfTest(allDataOfTests));
+          dispatch(setAllQuestionAndAnswerRecord([]));
+          dispatch(setIsAddPersonalityTestModalOpen(false));
           dispatch(setIsMainLoaderActive(false));
         }
         else {
@@ -280,11 +318,7 @@ const AddPersonalityTestModal = () => {
         dispatch(setIsMainLoaderActive(false));
       })
 
-    // let allDataOfTests = JSON.parse(JSON.stringify(allRecordOfTest));
-    // allDataOfTests.push(allRecord)
-    // dispatch(setAllRecordOfTest(allDataOfTests));
-    // dispatch(setAllQuestionAndAnswerRecord([]));
-    // dispatch(setIsAddPersonalityTestModalOpen(false));
+
 
 
 
@@ -471,7 +505,7 @@ const Test = () => {
               </div>
             </Table.Cell>
             <Table.Cell className="whitespace-nowrap p-4 text-base font-medium text-gray-900 dark:text-white">
-              1
+              {data._id}
             </Table.Cell>
             <Table.Cell className="mr-12 flex items-center space-x-6 whitespace-nowrap p-4 lg:mr-0">
               <img
@@ -481,7 +515,7 @@ const Test = () => {
               />
               <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
                 <div className="text-base font-semibold text-gray-900 dark:text-white">
-                  {data.name}
+                  {data.test_name}
                 </div>
                 {/* <div className="text-sm font-normal text-gray-500 dark:text-gray-400">
               neil.sims@flowbite.com
@@ -648,13 +682,44 @@ const EditUserModal = () => {
       questions: currentTestForEdit[0].questions
     }
 
-    let allDataOfTests = JSON.parse(JSON.stringify(allRecordOfTest)).filter((data) => {
-      return data.id !== currentTestForEdit[0].id
-    });
-    allDataOfTests.push(allRecord)
-    dispatch(setAllRecordOfTest(allDataOfTests));
-    dispatch(setAllQuestionAndAnswerRecord([]));
-    dispatch(setIsEditPersonalityTestModalOpen(false))
+    dispatch(setIsMainLoaderActive(true));
+
+    fetch(`${BACKEND_URL}/api/v1/admin/edit-test`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("adminToken")}`
+      },
+      body: JSON.stringify({
+        id: currentTestForEdit[0]._id,
+        test_name: testName,
+        image: personalityTestImageRef.current.src,
+        questions: currentTestForEdit[0].questions
+      })
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.status == "success") {
+          toast.success(data.message);
+          let allDataOfTests = JSON.parse(JSON.stringify(data.all_personality_tests))
+          dispatch(setAllRecordOfTest(allDataOfTests));
+          dispatch(setAllQuestionAndAnswerRecord([]));
+          dispatch(setIsEditPersonalityTestModalOpen(false))
+          dispatch(setIsMainLoaderActive(false));
+        }
+        else {
+          toast.error(data.message);
+          dispatch(setIsMainLoaderActive(false));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setIsMainLoaderActive(false));
+      })
+
+
 
   }
 
@@ -706,7 +771,7 @@ const EditUserModal = () => {
                   id="firstName"
                   name="firstName"
                   placeholder="Enter test name"
-                  defaultValue={currentTestForEdit[0].name}
+                  defaultValue={currentTestForEdit[0].test_name}
                 />
               </div>
             </div>
@@ -809,6 +874,43 @@ const DeleteUserModal = () => {
   const allRecordOfTest = useSelector((store) => store.allRecordOfTest.value);
   const currentTestForDelete = useSelector((store) => store.currentTestForDelete.value);
 
+  const handleDeleteTest = () => {
+    console.log(currentTestForDelete);
+
+    dispatch(setIsMainLoaderActive(true));
+
+    fetch(`${BACKEND_URL}/api/v1/admin/delete-test`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("adminToken")}`
+      },
+      body: JSON.stringify({
+        id: currentTestForDelete[0]._id,
+      })
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.status == "success") {
+          toast.success(data.message);
+          let allTestDataRecord = JSON.parse(JSON.stringify(data.all_personality_tests));
+          dispatch(setAllRecordOfTest(allTestDataRecord));
+          dispatch(setIsDeletetTestModalOpen(false));
+          dispatch(setIsMainLoaderActive(false));
+        }
+        else {
+          toast.error(data.message);
+          dispatch(setIsMainLoaderActive(false));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setIsMainLoaderActive(false));
+      })
+
+  }
   return (
     <>
       <Modal className="z-[9999]" onClose={() => dispatch(setIsDeletetTestModalOpen(false))} show={isDeletetTestModalOpen} size="md">
@@ -822,17 +924,8 @@ const DeleteUserModal = () => {
               Are you sure you want to delete this test?
             </p>
             <div className="flex items-center gap-x-3">
-              <Button color="failure" onClick={() => {
-                console.log(currentTestForDelete);
-
-                let allTestDataRecord = JSON.parse(JSON.stringify(allRecordOfTest));
-                let updatedTestRecord = allTestDataRecord.filter((data) => {
-                  return data.id !== currentTestForDelete[0].id
-                });
-
-                dispatch(setAllRecordOfTest(updatedTestRecord));
-                dispatch(setIsDeletetTestModalOpen(false));
-              }}>
+              <Button color="failure" onClick={handleDeleteTest}
+              >
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => { dispatch(setIsDeletetTestModalOpen(false)); dispatch(setCurrentTestForDelete([])) }}>

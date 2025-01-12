@@ -60,71 +60,73 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    console.log("isMainLoaderActive", isMainLoaderActive);
+
+  }, [])
+
+
 
   return (
     <>
-      {isMainLoaderActive == false ? (
-        <>
-          {isUserLoggedIn ? (
-            <>
-
-              {!location.pathname.startsWith("/user-dashboard") ? (
-                <Header />
-              ) : <></>}
-
-
-              {/*Implementing Routes for respective Path */}
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/our-team" element={<OurTeam />} />
-                <Route path="/feature" element={<Feature />} />
-                <Route path="/contact-us" element={<ContactUs />} />
-                <Route path="/test" element={<PersonalityTests />} />
-                <Route path="/test/*" element={<SingleTestPage />} />
-                <Route path="/user-dashboard/*" element={<UserDashboardPage />} >
-                  <Route index element={<DashboardPage />} />
-                  <Route path='tests' element={<UserTestsPage />} />
-
-                </Route>
-
-                <Route path="*" element={<NotFoundPage />} />
-
-              </Routes>
-
-              {!location.pathname.startsWith("/user-dashboard") ? (
-                <Footer />
-              ) : <></>}
-            </>
-          ) : (
-            <>
-              <Routes>
-                <Route path="/" element={<LoginForm />} />
-                <Route path="/register" element={<RegisterForm />} />
-                <Route path="/admin/*" element={isAdminLoggedIn ? <AdminDashboardPage /> : <AdminLoginForm />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path='user-list' element={<UserListPage />} />
-                  <Route path='tests' element={<PersonalityTestPage />} />
-                </Route>
-                <Route path="*" element={<NotFoundPage />} />
-
-              </Routes>
-            </>
-          )}
-
-        </>
-      ) : <></>}
-
 
       {/* <!-- Loader Overlay --> */}
       {isMainLoaderActive ? (
         // <div className="loader-overlay">
         //   <div className="lds-ripple"><div></div><div></div></div>
         // </div>
-        <div className="page-loader">
+        <div className="page-loader z-[12222222222]">
           <div className="spinner"></div>
           <div className="txt">PersonaQuest</div>
         </div>
       ) : <></>}
+
+      {isUserLoggedIn ? (
+        <>
+
+          {!location.pathname.startsWith("/user-dashboard") ? (
+            <Header />
+          ) : <></>}
+
+
+          {/*Implementing Routes for respective Path */}
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/our-team" element={<OurTeam />} />
+            <Route path="/feature" element={<Feature />} />
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/test" element={<PersonalityTests />} />
+            <Route path="/test/*" element={<SingleTestPage />} />
+            <Route path="/user-dashboard/*" element={<UserDashboardPage />} >
+              <Route index element={<DashboardPage />} />
+              <Route path='tests' element={<UserTestsPage />} />
+
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+
+          </Routes>
+
+          {!location.pathname.startsWith("/user-dashboard") ? (
+            <Footer />
+          ) : <></>}
+        </>
+      ) : (
+        <>
+          <Routes>
+            <Route path="/" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/admin/*" element={isAdminLoggedIn ? <AdminDashboardPage /> : <AdminLoginForm />}>
+              <Route index element={<Dashboard />} />
+              <Route path='user-list' element={<UserListPage />} />
+              <Route path='tests' element={<PersonalityTestPage />} />
+            </Route>
+            <Route path="*" element={<NotFoundPage />} />
+
+          </Routes>
+        </>
+      )}
+
 
       <ToastContainer className="z-[999999]" />
 
