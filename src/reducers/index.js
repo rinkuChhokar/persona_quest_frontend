@@ -13,6 +13,11 @@ import isEditPersonalityTestModalOpenReducer from "../features/adminPage/testPag
 import currentTestForEditReducer from "../features/adminPage/testPage/currentTestForEditSlice";
 import isDeletetTestModalOpenReducer from "../features/adminPage/testPage/isDeletetTestModalOpenSlice";
 import currentTestForDeleteReducer from "../features/adminPage/testPage/currentTestForDeleteSlice";
+import allPersonalityTestsReducer from "../features/personalityTest/allPersonalityTestsSlice";
+import singlePersonalityTestFetchReducer from "../features/personalityTest/singlePersonalityTestFetchSlice";
+import stepReducer from "../features/personalityTest/stepSlice";
+import answersReducer from "../features/personalityTest/answersSlice";
+import selectedOptionReducer from "../features/personalityTest/selectedOptionSlice";
 
 
 const rootReducer = combineReducers({
@@ -29,7 +34,12 @@ const rootReducer = combineReducers({
     isEditPersonalityTestModalOpen: isEditPersonalityTestModalOpenReducer,
     currentTestForEdit: currentTestForEditReducer,
     isDeletetTestModalOpen: isDeletetTestModalOpenReducer,
-    currentTestForDelete: currentTestForDeleteReducer
+    currentTestForDelete: currentTestForDeleteReducer,
+    allPersonalityTests: allPersonalityTestsReducer,
+    singlePersonalityTestFetch: singlePersonalityTestFetchReducer,
+    step: stepReducer,
+    answers: answersReducer,
+    selectedOption: selectedOptionReducer
 });
 
 export default rootReducer;

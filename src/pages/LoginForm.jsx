@@ -53,7 +53,7 @@ const LoginForm = () => {
 
         console.log(formDataJSON);
         dispatch(setIsUserClickedOnSignInButton(true));
-        fetch(`${BACKEND_URL}/api/v1/user-login`, {
+        fetch(`${BACKEND_URL}/api/v1/user/user-login`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

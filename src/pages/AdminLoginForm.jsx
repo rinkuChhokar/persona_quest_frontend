@@ -50,7 +50,7 @@ const AdminLoginForm = () => {
 
         console.log(formDataJSON);
         dispatch(setIsUserClickedOnSignInButtonForAdmin(true));
-        fetch(`${BACKEND_URL}/api/v1/admin-login`, {
+        fetch(`${BACKEND_URL}/api/v1/admin/admin-login`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

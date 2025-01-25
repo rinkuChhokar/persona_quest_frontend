@@ -1,6 +1,11 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { setIsMainLoaderActive } from '../features/isMainLoaderActiveSlice';
+import { BACKEND_URL } from '../api';
+import Cookies from "js-cookie";
+import { toast } from 'react-toastify';
+import { setAllPersonalityTests } from '../features/personalityTest/allPersonalityTestsSlice';
 
 const personalityTests = [
     {
@@ -24,20 +29,53 @@ const personalityTests = [
 
 const PersonalityTests = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const allPersonalityTests = useSelector((store) => store.allPersonalityTests.value);
+
+    useEffect(() => {
+        dispatch(setIsMainLoaderActive(true));
+        fetch(`${BACKEND_URL}/api/v1/user/fetch-all-tests`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${Cookies.get("userToken")}`
+            },
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                if (data.status == "success") {
+                    // toast.success(data.message);
+                    dispatch(setAllPersonalityTests(data.all_personality_tests));
+                    dispatch(setIsMainLoaderActive(false));
+                }
+                else {
+                    toast.error(data.message);
+                    dispatch(setIsMainLoaderActive(false));
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(setIsMainLoaderActive(false));
+            })
+    }, [])
+
     return (
         <div className="bg-white p-4 font-sans">
             <div className="max-w-5xl max-lg:max-w-3xl max-md:max-w-md mx-auto mt-10 mb-16">
                 <h2 className="text-3xl font-extrabold text-gray-800">Personality Tests</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-                    {personalityTests.map((test) => (
+                    {allPersonalityTests.length > 0 && allPersonalityTests.map((test) => (
                         <div key={test.id} className="bg-purple-100 cursor-pointer rounded-md overflow-hidden group">
                             <div className="relative overflow-hidden">
                                 <img src={test.image} alt="Blog Post 3" className="w-full h-60 object-cover group-hover:scale-125 transition-all duration-300" />
                                 <div className="px-4 py-2.5 text-white text-sm tracking-wider bg-pink-500 absolute bottom-0 right-0">August 16, 2023</div>
                             </div>
                             <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-800">{test.testName}</h3>
-                                <button onClick={() => navigate(`${test.id}`)} className="px-4 py-2 mt-6 rounded-md text-white text-sm tracking-wider border-none outline-none bg-pink-500 hover:bg-pink-600">Play</button>
+                                <h3 className="text-xl font-bold text-gray-800">{test.test_name}</h3>
+                                <button onClick={() => navigate(`${test.test_slug}`)} className="px-4 py-2 mt-6 rounded-md text-white text-sm tracking-wider border-none outline-none bg-pink-500 hover:bg-pink-600">Play</button>
                             </div>
                         </div>
                     ))}

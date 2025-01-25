@@ -64,7 +64,7 @@ const UserDashboardPage = () => {
 
     const handleUserLogout = () => {
         dispatch(setIsMainLoaderActive(true));
-        fetch(`${BACKEND_URL}/api/v1/user-logout`, {
+        fetch(`${BACKEND_URL}/api/v1/user/user-logout`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

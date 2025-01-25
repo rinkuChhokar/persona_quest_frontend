@@ -68,7 +68,7 @@ const RegisterForm = () => {
 
         console.log(formDataJSON);
         dispatch(setIsUserClickedOnSignUpButton(true));
-        fetch(`${BACKEND_URL}/api/v1/user-register`, {
+        fetch(`${BACKEND_URL}/api/v1/user/user-register`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

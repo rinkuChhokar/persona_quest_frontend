@@ -180,6 +180,7 @@ const AddPersonalityTestModal = () => {
   const fileInputForLogoRef = useRef(null);
   const personalityTestImageRef = useRef(null);
   const testNameRef = useRef(null);
+  const testSlugRef = useRef(null);
 
   const triggerFileUpload = () => {
     fileInputForLogoRef.current.click();
@@ -247,9 +248,15 @@ const AddPersonalityTestModal = () => {
   const handleAddPersonalityTest = (e) => {
     e.preventDefault();
     let testName = testNameRef.current.value;
+    let testSlug = testSlugRef.current.value;
     console.log("dfgfd", testName);
     if (testName.trim() === "") {
       toast.error("Please give a test name!");
+      return;
+    }
+
+    if (testSlug.trim() === "") {
+      toast.error("Please give a slug name!");
       return;
     }
 
@@ -274,12 +281,6 @@ const AddPersonalityTestModal = () => {
       }
     }
 
-    let allRecord = {
-      id: `id${Date.now()}`,
-      name: testName,
-      image: personalityTestImageRef.current.src,
-      questions: allQuestionAndAnswerRecord
-    }
 
     dispatch(setIsMainLoaderActive(true));
 
@@ -292,6 +293,7 @@ const AddPersonalityTestModal = () => {
       body: JSON.stringify({
         token: Cookies.get("adminToken"),
         test_name: testName,
+        test_slug: testSlug,
         image: personalityTestImageRef.current.src,
         questions: allQuestionAndAnswerRecord
       })
@@ -379,6 +381,17 @@ const AddPersonalityTestModal = () => {
                   id="firstName"
                   name="firstName"
                   placeholder="Enter test name"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="testSlug">Slug</Label>
+              <div className="mt-1">
+                <TextInput
+                  ref={testSlugRef}
+                  id="testSlug"
+                  name="testSlug"
+                  placeholder="Enter slug name"
                 />
               </div>
             </div>
@@ -573,6 +586,8 @@ const EditUserModal = () => {
   const fileInputForLogoRef = useRef(null);
   const personalityTestImageRef = useRef(null);
   const testNameRef = useRef(null);
+  const testSlugRef = useRef(null);
+
   const currentTestForEdit = useSelector((store) => store.currentTestForEdit.value);
 
   const triggerFileUpload = () => {
@@ -649,9 +664,15 @@ const EditUserModal = () => {
   const handleEditPersonalityTest = (e) => {
     e.preventDefault();
     let testName = testNameRef.current.value;
+    let testSlug = testSlugRef.current.value;
     console.log("dfgfd", testName);
     if (testName.trim() === "") {
       toast.error("Please give a test name!");
+      return;
+    }
+
+    if (testSlug.trim() === "") {
+      toast.error("Please give a slug name!");
       return;
     }
 
@@ -693,6 +714,7 @@ const EditUserModal = () => {
       body: JSON.stringify({
         id: currentTestForEdit[0]._id,
         test_name: testName,
+        test_slug: testSlug,
         image: personalityTestImageRef.current.src,
         questions: currentTestForEdit[0].questions
       })
@@ -772,6 +794,18 @@ const EditUserModal = () => {
                   name="firstName"
                   placeholder="Enter test name"
                   defaultValue={currentTestForEdit[0].test_name}
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="testSlug">Slug</Label>
+              <div className="mt-1">
+                <TextInput
+                  ref={testSlugRef}
+                  id="testSlug"
+                  name="testSlug"
+                  placeholder="Enter slug name"
+                  defaultValue={currentTestForEdit[0].test_slug}
                 />
               </div>
             </div>

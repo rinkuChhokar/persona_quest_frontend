@@ -65,7 +65,7 @@ const AdminDashboardPage = () => {
 
     const handleAdminLogout = () => {
         dispatch(setIsMainLoaderActive(true));
-        fetch(`${BACKEND_URL}/api/v1/admin-logout`, {
+        fetch(`${BACKEND_URL}/api/v1/admin/admin-logout`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
